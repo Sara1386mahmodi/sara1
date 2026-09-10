@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111111">
+<title>SARA — Momentum</title>
+<link rel="manifest" href="manifest.json">
+<style>
+:root{--bg:#0b0b0d;--card:#151519;--text:#f7f4ef;--muted:#aaa6a0;--accent:#f1b45b;--danger:#ef6b67;--ok:#78d6a0}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#222 0,#0b0b0d 48%);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh}
+main{max-width:680px;margin:auto;padding:22px 16px 50px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.logo{font-weight:900;letter-spacing:2px}.date{color:var(--muted);font-size:13px}
+.hero{padding:26px 20px;border:1px solid #2c2c32;border-radius:24px;background:linear-gradient(145deg,#19191e,#101014);box-shadow:0 15px 50px #0008}
+.eyebrow{color:var(--accent);font-size:12px;font-weight:800;letter-spacing:1px}.hero h1{font-size:31px;line-height:1.25;margin:9px 0}.hero p{color:#d1cdc7;line-height:1.9;margin:0}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+button{border:0;border-radius:15px;padding:14px;font-weight:800;font-size:15px;cursor:pointer;background:#27272d;color:white}button.primary{background:var(--accent);color:#17130d}button.danger{background:#3a2020;color:#ffaaa6}
+section{margin-top:18px}.card{background:var(--card);border:1px solid #29292f;border-radius:20px;padding:17px}.title{font-weight:900;margin-bottom:12px}
+.goal{display:flex;gap:11px;align-items:flex-start;padding:12px 0;border-bottom:1px solid #29292f}.goal:last-child{border-bottom:0}.goal input{accent-color:var(--accent);width:20px;height:20px;margin-top:2px}.goal b{display:block}.goal small{color:var(--muted);line-height:1.6}
+.bar{height:9px;background:#29292f;border-radius:9px;overflow:hidden;margin-top:12px}.fill{height:100%;width:0;background:var(--accent);transition:.25s}
+textarea,input[type=text],input[type=time]{width:100%;background:#0e0e11;border:1px solid #33333a;color:white;border-radius:12px;padding:11px;font:inherit;margin-top:7px}
+label{display:block;color:#c9c4bd;font-size:13px;margin-top:12px}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.msg{padding:15px;border-radius:15px;background:#211d17;border-right:3px solid var(--accent);line-height:1.9}
+.hidden{display:none}.tiny{font-size:12px;color:var(--muted);line-height:1.7}.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#f4efe8;color:#111;padding:12px 16px;border-radius:13px;font-weight:800;display:none;z-index:10}
+@media(max-width:430px){.hero h1{font-size:27px}.actions{grid-template-columns:1fr}.row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main>
+<div class="top"><div class="logo">SARA / MOMENTUM</div><div class="date" id="date"></div></div>
+
+<div class="hero">
+<div class="eyebrow">SATURDAY — NEW PHASE</div>
+<h1 id="headline">بلند شو. قرار نیست حسش بیاد؛ باید شروعش کنی.</h1>
+<p id="sub">هدف امروز کامل بودن نیست. فقط نگذار «حال ندارم» تصمیم بگیرد امروزت چه شکلی باشد.</p>
+<div class="actions">
+<button class="primary" onclick="move()">پاشو؛ کار بعدی</button>
+<button onclick="mode('tired')">حالم بده / خسته‌ام</button>
+<button onclick="mode('stuck')">گیر کردم / فرار می‌کنم</button>
+<button onclick="mode('reset')">امروز خراب شد</button>
+</div>
+</div>
+
+<section><div class="card">
+<div class="title">امروز برای چی داری می‌جنگی؟</div>
+<div class="msg" id="why">برای ساختن نسخه‌ای از خودت که فقط درباره‌ی آینده حرف نمی‌زند؛ واقعاً مهارت می‌سازد، پول درمی‌آورد و پروژه‌های بزرگ می‌سازد.</div>
+</div></section>
+
+<section><div class="card">
+<div class="title">افرادی که می‌خواهی ازشان جلو بزنی</div>
+<div id="rivals"></div>
+<p class="tiny">این بخش را خودت پر کن. سیستم قرار نیست برایت آدم بسازد یا حدس بزند؛ فقط چیزی را که خودت انتخاب کرده‌ای به تو یادآوری می‌کند.</p>
+</div></section>
+
+<section><div class="card">
+<div class="title">ماموریت‌های امروز</div>
+<div id="tasks"></div>
+<div class="bar"><div class="fill" id="fill"></div></div>
+<p class="tiny" id="progressText"></p>
+</div></section>
+
+<section><div class="card">
+<div class="title">پیام‌های ساعت‌دار</div>
+<div class="row">
+<label>ساعت بیدار شدن<input type="time" id="wake"></label>
+<label>شروع کار اصلی<input type="time" id="work"></label>
+</div>
+<label>پیام ساعت بیدار شدن<textarea id="wakeMsg" rows="2">بلند شو. گوشی را کنار بگذار. اول آب، صورت، صبحانه؛ بعد شروع.</textarea></label>
+<label>پیام شروع کار<textarea id="workMsg" rows="2">وقتشه. نه برنامه‌ی جدید، نه اسکرول. فقط اولین کار را باز کن.</textarea></label>
+<button class="primary" style="width:100%;margin-top:12px" onclick="saveSettings()">ذخیره‌ی تنظیمات</button>
+<p class="tiny">وقتی این صفحه باز باشد، در زمان تعیین‌شده پیام می‌دهد. برای هشدار مطمئن حتی با بسته بودن صفحه، بعداً می‌توانیم آن را به ربات تلگرام یا اپ واقعی وصل کنیم.</p>
+</div></section>
+
+<section><div class="card">
+<div class="title">یادآوری‌های بزرگ</div>
+<div class="msg">🇬🇧 انگلیسی بهتر و روان‌تر<br>💻 مهارت واقعی در برنامه‌نویسی و اولین درآمد<br>🤖 مسیر بلندمدت: پروژه‌های بزرگ و فناوری/رباتیک<br>🏠 اتاق مرتب و زندگی منظم‌تر<br>💪 بدنی که خودت از دیدنش لذت ببری</div>
+</div></section>
+
+<section><div class="card">
+<div class="title">تنظیمات شخصی</div>
+<label>هدف/جمله‌ای که می‌خواهی هر روز ببینی<textarea id="whyInput" rows="3"></textarea></label>
+<label>نام نفر اول<input type="text" id="r1"></label>
+<label>نام نفر دوم<input type="text" id="r2"></label>
+<label>نام نفر سوم<input type="text" id="r3"></label>
+<button onclick="savePersonal()" style="width:100%;margin-top:12px">ذخیره</button>
+</div></section>
+</main>
+<div class="toast" id="toast"></div>
+<script>
+const defaultTasks=[
+["english","English","هر روز یک قدم برای روان‌تر شدن"],
+["coding","Coding","مهارت واقعی، نه فقط کپی‌کردن کد"],
+["future","University / Course","چیزی که آینده‌ات را جلو می‌برد"],
+["body","Workout / movement","برای فرم و قدرتی که می‌خواهی"],
+["room","Room","محیطت را دوباره تحت کنترل بگیر"],
+["self","Self-care","رسیدگی به خودت، بدون وسواس"]
+];
+let data=JSON.parse(localStorage.getItem("saraMomentum")||"{}");
+let tasks=data.tasks||{};
+function today(){return new Date().toISOString().slice(0,10)}
+function render(){
+ document.getElementById("date").textContent=new Date().toLocaleDateString("fa-IR",{weekday:"long",month:"long",day:"numeric"});
+ if(data.why) document.getElementById("why").textContent=data.why;
+ document.getElementById("whyInput").value=data.why||"برای ساختن نسخه‌ای از خودت که فقط درباره‌ی آینده حرف نمی‌زند؛ واقعاً مهارت می‌سازد، پول درمی‌آورد و پروژه‌های بزرگ می‌سازد.";
+ ["wake","work","wakeMsg","workMsg","r1","r2","r3"].forEach(id=>{if(data[id])document.getElementById(id).value=data[id]});
+ document.getElementById("tasks").innerHTML=defaultTasks.map(([id,n,s])=>`<div class="goal"><input type="checkbox" ${tasks[id]?"checked":""} onchange="toggle('${id}',this.checked)"><div><b>${n}</b><small>${s}</small></div></div>`).join("");
+ let names=[data.r1,data.r2,data.r3].filter(Boolean);
+ document.getElementById("rivals").innerHTML=names.length?names.map(n=>`<div class="goal"><div>⚡</div><div><b>${escapeHtml(n)}</b><small>از او بهتر شدن فقط با عمل امروز اتفاق می‌افتد.</small></div></div>`).join(""):"<div class='tiny'>هنوز کسی اضافه نکرده‌ای.</div>";
+ updateProgress();
+}
+function escapeHtml(s){return s.replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function toggle(id,v){tasks[id]=v;data.tasks=tasks;localStorage.setItem("saraMomentum",JSON.stringify(data));updateProgress()}
+function updateProgress(){let done=Object.values(tasks).filter(Boolean).length;let pct=Math.round(done/defaultTasks.length*100);document.getElementById("fill").style.width=pct+"%";document.getElementById("progressText").textContent=`${done} از ${defaultTasks.length} کار انجام شده — ${pct}%`}
+function savePersonal(){data.why=document.getElementById("whyInput").value.trim();["r1","r2","r3"].forEach(id=>data[id]=document.getElementById(id).value.trim());save();toast("ذخیره شد. فردا هم همین‌ها جلوی چشمت هستند.")}
+function saveSettings(){["wake","work","wakeMsg","workMsg"].forEach(id=>data[id]=document.getElementById(id).value);save();toast("زمان‌ها ذخیره شدند.")}
+function save(){localStorage.setItem("saraMomentum",JSON.stringify(data));render()}
+function toast(t){let x=document.getElementById("toast");x.textContent=t;x.style.display="block";setTimeout(()=>x.style.display="none",2500)}
+function move(){document.getElementById("tasks").scrollIntoView({behavior:"smooth"});toast("فقط اولین کار را انجام بده. لازم نیست کل روز را همین الان حل کنی.")}
+function mode(m){
+ const h=document.getElementById("headline"),s=document.getElementById("sub");
+ if(m==="tired"){h.textContent="خسته‌ای؟ باشه. ولی تسلیم خستگی نشو.";s.textContent="۱۰ دقیقه نسخه‌ی حداقلی را انجام بده. بعد دوباره تصمیم بگیر."}
+ if(m==="stuck"){h.textContent="گیر کردی؟ فرار نکن.";s.textContent="مشکل را کوچک کن. یک قدم. اگر لازم شد کمک بگیر، ولی صفحه را نبند."}
+ if(m==="reset"){h.textContent="امروز خراب شد؟ تمام نشده.";s.textContent="قرار نیست فردا را منتظر بمانی. همین حالا یک کار کوچک را نجات بده."}
+}
+let lastMinute="";
+setInterval(()=>{
+ const now=new Date(), key=now.toTimeString().slice(0,5);
+ if(key!==lastMinute){lastMinute=key;
+  if(data.wake===key) notify(data.wakeMsg||"بلند شو.");
+  if(data.work===key) notify(data.workMsg||"وقت شروع کاره.");
+ }
+},1000);
+async function notify(msg){toast(msg);try{if(Notification.permission==="granted")new Notification("SARA / MOMENTUM",{body:msg});else if(Notification.permission!=="denied")await Notification.requestPermission()}catch(e){}}
+render();
+</script>
+</body></html>
